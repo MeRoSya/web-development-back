@@ -2,7 +2,10 @@
   "name": "web-development-back",
   "version": "1.0.0",
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
     "express": "^4.17.0",
+    "node-telegram-bot-api": "^0.56.0",
     "nodemon": "^2.0.15"
   },
   "scripts": {
