@@ -1,14 +1,7 @@
 const crypto = require("crypto");
+const fs = require("fs");
 
-//TODO: Вынести в json файл (а лучше в бд), который будет дополняться (для регистрации)
-const availableLogins = [
-    {
-        id: 1,
-        login: "root@root.com",
-        userName: "root",
-        hashedPassword: crypto.createHash("sha256").update("123456aA").digest("hex")
-    }
-];
+const availableLogins = JSON.parse(fs.readFileSync("users.json")) ?? [];
 
 module.exports.auth = (fetchedLogin, fetchedPassword) => {
     var hashedPassword = crypto.createHash("sha256").update(fetchedPassword).digest("hex");
