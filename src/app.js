@@ -76,14 +76,11 @@ app.post("/registration", (request, response) => {
 //#region Messages
 app.post("/sendMessage", (request, response)=> {
     sendChatMessage(request.body.userName, request.body.messageBody, bot);
-   // bot.sendMessage(process.env.SAIBAKEN_CHAT_ID, "jopa");
     response.sendStatus(200);
-   // console.log(request.body.userName, request.body.messageBody)
 })
 
 app.get("/getMessages", (request, response)=> {
     response.send(getChatMessages());
-   // console.log(request.body.userName, request.body.messageBody)
 })
 //#endregion
 app.listen(3001);

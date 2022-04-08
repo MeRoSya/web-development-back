@@ -2,8 +2,6 @@ const TelegramBot = require("node-telegram-bot-api");
 const { addMessage, getMessages } = require("./filemanagement");
 require("dotenv").config();
 
-//const messages = JSON.parse(fs.readFileSync("messages.json")) ?? [];
-
 module.exports.getChatMessages = () => {
   return getMessages();
 };
