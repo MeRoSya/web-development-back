@@ -1,7 +1,7 @@
 const crypto = require("crypto");
-const fs = require("fs");
+const { getLogins } = require("./filemanagement");
 
-const availableLogins = JSON.parse(fs.readFileSync("users.json")) ?? [];
+const availableLogins = getLogins();
 
 module.exports.auth = (fetchedLogin, fetchedPassword) => {
     var hashedPassword = crypto.createHash("sha256").update(fetchedPassword).digest("hex");

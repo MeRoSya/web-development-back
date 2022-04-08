@@ -3,6 +3,7 @@ const cors = require('cors');
 const TelegramBot = require('node-telegram-bot-api');
 const { verifyLogin, auth } = require("./login");
 const { canCreateUser, register } = require("./registration");
+const { sendChatMessage, getChatMessages } = require("./messaging");
 
 require('dotenv').config();
 
@@ -71,4 +72,15 @@ app.post("/registration", (request, response) => {
 
 //#endregion Registration handle
 
+
+//#region Messages
+app.post("/sendMessage", (request, response)=> {
+    sendChatMessage(request.body.userName, request.body.messageBody, bot);
+    response.sendStatus(200);
+})
+
+app.get("/getMessages", (request, response)=> {
+    response.send(getChatMessages());
+})
+//#endregion
 app.listen(3001);

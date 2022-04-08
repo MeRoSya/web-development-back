@@ -1,8 +1,8 @@
 const crypto = require("crypto");
-const fs = require("fs");
 const { v4 } = require("uuid");
+const { addLogin, getLogins } = require("./filemanagement");
 
-const availableLogins = JSON.parse(fs.readFileSync("users.json")) ?? []
+const availableLogins = getLogins();
 
 module.exports.register = (fetchedLogin, fetchedPassword, fetchedUserName) => {
     var hashedPassword = crypto.createHash("sha256").update(fetchedPassword).digest("hex");
@@ -14,9 +14,7 @@ module.exports.register = (fetchedLogin, fetchedPassword, fetchedUserName) => {
         hashedPassword: hashedPassword
     };
 
-    availableLogins.push(user);
-
-    fs.writeFileSync("users.json", JSON.stringify(availableLogins));
+    addLogin(user);
 
     return {
         id: user.id,

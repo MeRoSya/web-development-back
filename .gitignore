@@ -131,3 +131,4 @@ dist
 
 # auth info
 users.json
+messages.json
