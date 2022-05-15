@@ -4,6 +4,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const { verifyLogin, auth } = require("./login");
 const { canCreateUser, register } = require("./registration");
 const { sendChatMessage, getChatMessages } = require("./messaging");
+const { dbClientInit } = require("./dbAPI");
 
 require('dotenv').config();
 
@@ -19,26 +20,30 @@ app.use(express.json());
 //#region Login handle
 
 app.use("/login", (request, response, next) => {
-    if (!verifyLogin(request.body.login)) {
-        response.sendStatus(404);
-    } else {
-        console.log("Login is verified");
-        next();
-    }
+    verifyLogin(request.body.login).then(
+        (result) => {
+            if (!result) {
+                response.sendStatus(404);
+            } else {
+                console.log("Login is verified");
+                next();
+            }
+        });
 });
 
 app.post("/login", (request, response) => {
-    const userInfo = auth(request.body.login, request.body.password);
+    auth(request.body.login, request.body.password).then(
+        (userInfo) => {
+            if (userInfo === -1) {
+                response.sendStatus(401);
+            } else {
+                console.log("User " + userInfo.userName + " successfully authenticated");
 
-    if (userInfo === -1) {
-        response.sendStatus(401);
-    } else {
-        console.log("User " + userInfo.userName + " successfully authenticated");
+                bot.sendMessage(process.env.MEROSYA_CHAT_ID, "User " + userInfo.userName + " logged in at " + new Date(Date.now()).toUTCString());
 
-        bot.sendMessage(process.env.MEROSYA_CHAT_ID, "User " + userInfo.userName + " logged in at " + new Date(Date.now()).toUTCString());
-
-        response.send(JSON.stringify(userInfo));
-    }
+                response.send(JSON.stringify(userInfo));
+            }
+        });
 });
 
 //#endregion Login handle
@@ -46,41 +51,51 @@ app.post("/login", (request, response) => {
 //#region Registration handle
 
 app.use("/registration", (request, response, next) => {
-    if (!canCreateUser(request.body.login)) {
-        response.sendStatus(403);
-    } else {
-        console.log("Login is not registered");
-        next();
-    }
+    canCreateUser(request.body.login).then(
+        (result) => {
+            if (!result) {
+                response.sendStatus(403);
+            } else {
+                console.log("Login is available for registration");
+                next();
+            }
+        }
+    );
 });
 
 app.post("/registration", (request, response) => {
     const userInfo = request.body
-    
-    const userResponse = register(userInfo.login, userInfo.password, userInfo.userName); 
 
-    if (userResponse === -1) {
-        response.sendStatus(401);
-    } else {
-        console.log("User " + userResponse.userName + " successfully registered");
+    register(userInfo.login, userInfo.password, userInfo.userName).then((userResponse) => {
 
-        bot.sendMessage(process.env.MEROSYA_CHAT_ID, "User " + userResponse.userName + " logged in at " + new Date(Date.now()).toUTCString());
+        if (userResponse === -1) {
+            response.sendStatus(401);
+        } else {
+            console.log("User " + userResponse.userName + " successfully registered");
 
-        response.send(JSON.stringify(userResponse));
-    }
+            bot.sendMessage(process.env.MEROSYA_CHAT_ID, "User " + userResponse.userName + " logged in at " + new Date(Date.now()).toUTCString());
+
+            response.send(JSON.stringify(userResponse));
+        }
+
+    });
 });
 
 //#endregion Registration handle
 
 
 //#region Messages
-app.post("/sendMessage", (request, response)=> {
-    sendChatMessage(request.body.userName, request.body.messageBody, bot);
-    response.sendStatus(200);
+app.post("/sendMessage", (request, response) => {
+    sendChatMessage(request.body.userName, request.body.messageBody, bot).then(
+        () => response.sendStatus(200)
+    );
 })
 
-app.get("/getMessages", (request, response)=> {
-    response.send(getChatMessages());
+app.get("/getMessages", (request, response) => {
+    getChatMessages().then(
+        (messages) => response.send(messages)
+    );
 })
 //#endregion
-app.listen(3001);
+
+dbClientInit(app, 3001, process.env.MONGO_URL);
