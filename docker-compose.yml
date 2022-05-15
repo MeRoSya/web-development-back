@@ -1,0 +1,21 @@
+version: '2'
+name: chat-app-backend
+
+services:
+  server:
+    build: .
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/
+    links:
+      - "db:mongo"
+    
+  db:
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - '~/chat-app/mongo/data:/data/db'
