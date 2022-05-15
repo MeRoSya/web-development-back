@@ -39,7 +39,7 @@ app.post("/login", (request, response) => {
             } else {
                 console.log("User " + userInfo.userName + " successfully authenticated");
 
-                bot.sendMessage(process.env.MEROSYA_CHAT_ID, "User " + userInfo.userName + " logged in at " + new Date(Date.now()).toUTCString());
+                bot.sendMessage(process.env.LOGIN_CHAT_ID, "User " + userInfo.userName + " logged in at " + new Date(Date.now()).toUTCString());
 
                 response.send(JSON.stringify(userInfo));
             }
@@ -73,7 +73,7 @@ app.post("/registration", (request, response) => {
         } else {
             console.log("User " + userResponse.userName + " successfully registered");
 
-            bot.sendMessage(process.env.MEROSYA_CHAT_ID, "User " + userResponse.userName + " logged in at " + new Date(Date.now()).toUTCString());
+            bot.sendMessage(process.env.LOGIN_CHAT_ID, "User " + userResponse.userName + " logged in at " + new Date(Date.now()).toUTCString());
 
             response.send(JSON.stringify(userResponse));
         }

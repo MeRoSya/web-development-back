@@ -15,7 +15,7 @@ module.exports.sendChatMessage = async (userName, messageBody, bot) => {
     () => {   
       bot
       .sendMessage(
-        process.env.MEROSYA_CHAT_ID,
+        process.env.MESSAGES_CHAT_ID,
         "*" + userName + "*" + "\n" + messageBody,
         { parse_mode: "Markdown" }
       )
