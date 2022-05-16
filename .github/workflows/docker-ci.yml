@@ -36,3 +36,9 @@ jobs:
           tags: |
             ghcr.io/merosya/chat-app-backend/messaging-service:latest
           push: ${{ github.ref == 'refs/heads/master' }}
+
+    - name: Publish artifacts
+      uses: actions/upload-artifact@v3
+      with:
+          name: docker-compose
+          path: docker-compose.yml
