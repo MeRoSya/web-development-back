@@ -4,6 +4,7 @@ name: chat-app-backend
 services:
   messaging-service:
     build: ./messaging-service
+    image: ghcr.io/merosya/chat-app-backend/messaging-service:latest
     container_name: messaging-service
     ports:
       - "81:3001"
@@ -26,6 +27,7 @@ services:
   
   auth-service:
     build: ./auth-service
+    image: ghcr.io/merosya/chat-app-backend/auth-service:latest
     container_name: auth-service
     ports:
       - "82:3001"
