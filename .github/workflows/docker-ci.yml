@@ -1,0 +1,36 @@
+name: docker images CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Login to Github Packages
+      uses: docker/login-action@v1
+      with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push the server Docker image
+      uses: docker/build-push-action@v2
+      with:
+          context: .
+          tags: |
+            ghcr.io/merosya/chat-app-backend/server:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
+
+    - name: Publish artifacts
+      uses: actions/upload-artifact@v3
+      with:
+          name: docker-compose
+          path: docker-compose.yml

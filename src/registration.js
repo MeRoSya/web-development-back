@@ -1,27 +1,23 @@
 const crypto = require("crypto");
-const { v4 } = require("uuid");
-const { addLogin, getLogins } = require("./filemanagement");
+const { addLogin, getLogins } = require("./dbAPI");
 
-const availableLogins = getLogins();
-
-module.exports.register = (fetchedLogin, fetchedPassword, fetchedUserName) => {
+module.exports.register = async (fetchedLogin, fetchedPassword, fetchedUserName) => {
     var hashedPassword = crypto.createHash("sha256").update(fetchedPassword).digest("hex");
     
     user = {
-        id: v4(),
         login: fetchedLogin,
         userName: fetchedUserName,
         hashedPassword: hashedPassword
     };
 
-    addLogin(user);
+    const added_id = (await addLogin(user)).insertedId;
 
     return {
-        id: user.id,
+        id: added_id,
         userName: user.userName
     }
 }
 
-module.exports.canCreateUser = (fetchedLogin) => {
-    return (availableLogins.findIndex(({ login }) => login === fetchedLogin) !== -1) ? false : true;
+module.exports.canCreateUser = async (fetchedLogin) => {
+    return ((await getLogins()).findIndex(({ login }) => login === fetchedLogin) !== -1) ? false : true;
 }
