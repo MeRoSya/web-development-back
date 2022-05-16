@@ -1,7 +1,6 @@
 const MongoClient = require("mongodb").MongoClient;
 
 let users;
-let messages;
 
 module.exports.dbClientInit = (app, port, mongoUrl) => {
 
@@ -11,24 +10,11 @@ module.exports.dbClientInit = (app, port, mongoUrl) => {
         if (err) return console.log(err);
 
         users = client.db("usersdb").collection("users");
-        messages = client.db("messagesdb").collection("messages");
 
         app.listen(port, () => {
-            console.log("Server started...");
+            console.log("Auth service started...");
         });
     });
-}
-
-module.exports.getMessages = async () => {
-    const messagesList = await messages.find({}).toArray();
-
-    return messagesList;
-}
-
-module.exports.addMessage = async (message) => {
-    const addedMessage = await messages.insertOne(message);
-
-    return addedMessage;
 }
 
 module.exports.getLogins = async () => {

@@ -1,6 +1,6 @@
 FROM node:alpine
 
-WORKDIR /chat-server
+WORKDIR /auth-service
 
 COPY package*.json ./
 

@@ -3,7 +3,6 @@ const cors = require('cors');
 const TelegramBot = require('node-telegram-bot-api');
 const { verifyLogin, auth } = require("./login");
 const { canCreateUser, register } = require("./registration");
-const { sendChatMessage, getChatMessages } = require("./messaging");
 const { dbClientInit } = require("./dbAPI");
 
 require('dotenv').config();
@@ -82,20 +81,5 @@ app.post("/registration", (request, response) => {
 });
 
 //#endregion Registration handle
-
-
-//#region Messages
-app.post("/sendMessage", (request, response) => {
-    sendChatMessage(request.body.userName, request.body.messageBody, bot).then(
-        () => response.sendStatus(200)
-    );
-})
-
-app.get("/getMessages", (request, response) => {
-    getChatMessages().then(
-        (messages) => response.send(messages)
-    );
-})
-//#endregion
 
 dbClientInit(app, 3001, process.env.MONGO_URL);
