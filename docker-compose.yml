@@ -2,20 +2,46 @@ version: '2'
 name: chat-app-backend
 
 services:
-  server:
-    build: .
+  messaging-service:
+    build: ./messaging-service
+    container_name: messaging-service
     ports:
-      - "3001:3001"
+      - "81:3001"
+    depends_on:
+      - message-db
     env_file:
-      - .env
+      - ./messaging-service/.env
     environment:
       - MONGO_URL=mongodb://mongo:27017/
     links:
-      - "db:mongo"
+      - "message-db:mongo"
     
-  db:
+  message-db:
     image: mongo
-    ports:
-      - '27017:27017'
+    container_name: message-database
+    expose:
+      - 27017
     volumes:
-      - '~/chat-app/mongo/data:/data/db'
+      - '~/chat-app/mongo/data/messages:/data/db'
+  
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "82:3001"
+    depends_on:
+      - auth-db
+    env_file:
+      - ./messaging-service/.env
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/
+    links:
+      - "auth-db:mongo"
+    
+  auth-db:
+    image: mongo
+    container_name: auth-database
+    expose:
+      - 27017
+    volumes:
+      - '~/chat-app/mongo/data/auth_info:/data/db'
