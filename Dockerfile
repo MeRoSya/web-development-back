@@ -1,10 +1,10 @@
-FROM node
+FROM node:slim
 
 WORKDIR /chat-server
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --production
 
 COPY . .
 
