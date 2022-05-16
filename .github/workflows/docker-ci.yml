@@ -2,9 +2,9 @@ name: docker images CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
 
@@ -27,7 +27,7 @@ jobs:
           context: .
           tags: |
             ghcr.io/merosya/chat-app-backend/server:latest
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: ${{ github.ref == 'refs/heads/master' }}
 
     - name: Publish artifacts
       uses: actions/upload-artifact@v3
