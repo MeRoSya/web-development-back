@@ -18,7 +18,7 @@ app.use(express.json());
 
 //#region Login handle
 
-app.use("/login", (request, response, next) => {
+app.use("/api/v1/auth/login", (request, response, next) => {
     verifyLogin(request.body.login).then(
         (result) => {
             if (!result) {
@@ -30,7 +30,7 @@ app.use("/login", (request, response, next) => {
         });
 });
 
-app.post("/login", (request, response) => {
+app.post("/api/v1/auth/login", (request, response) => {
     auth(request.body.login, request.body.password).then(
         (userInfo) => {
             if (userInfo === -1) {
@@ -49,7 +49,7 @@ app.post("/login", (request, response) => {
 
 //#region Registration handle
 
-app.use("/registration", (request, response, next) => {
+app.use("/api/v1/auth/registration", (request, response, next) => {
     canCreateUser(request.body.login).then(
         (result) => {
             if (!result) {
@@ -62,7 +62,7 @@ app.use("/registration", (request, response, next) => {
     );
 });
 
-app.post("/registration", (request, response) => {
+app.post("/api/v1/auth/registration", (request, response) => {
     const userInfo = request.body
 
     register(userInfo.login, userInfo.password, userInfo.userName).then((userResponse) => {
