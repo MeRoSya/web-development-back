@@ -10,8 +10,8 @@
 
     ``` json
     {
-        userName: 'username',
-        messageBody: 'your cool message'
+        "userName": "username",
+        "messageBody": "your cool message"
     }
     ```
 

@@ -10,9 +10,9 @@
 
     ``` json
     {
-        login: 'example@mail.com',
-        password: 'password',
-        userName: 'username'
+        "login": "example@mail.com",
+        "password": "password",
+        "userName": "username"
     }
     ```
 
@@ -22,7 +22,7 @@
 
     ``` json
     {
-        login: 'example@mail.com',
-        password: 'password'
+        "login": "example@mail.com",
+        "password": "password"
     }
     ```
