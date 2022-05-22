@@ -129,6 +129,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# auth info
-users.json
-messages.json
+# ssl info
+*.crt
+*.key
