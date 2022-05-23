@@ -1,6 +1,4 @@
 version: "2"
-name: chat-app-backend
-
 services:
   messaging-service:
     build: ./messaging-service
@@ -19,7 +17,7 @@ services:
       - message-db:mongo
     
   message-db:
-    image: mongo
+    image: mongo:4.4.6
     container_name: message-database
     restart: unless-stopped
     expose:
@@ -44,7 +42,7 @@ services:
       - auth-db:mongo
     
   auth-db:
-    image: mongo
+    image: mongo:4.4.6
     container_name: auth-database
     restart: unless-stopped
     expose:
