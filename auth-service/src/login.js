@@ -1,12 +1,20 @@
 const crypto = require("crypto");
-const { getLogins } = require("./dbAPI");
+const { findByEmail, findByUserName } = require("./dbAPI");
 
-module.exports.auth = async (fetchedLogin, fetchedPassword) => {
+module.exports.auth = async (fetchedLoginData, fetchedPassword, authMethod) => {
     var hashedPassword = crypto.createHash("sha256").update(fetchedPassword).digest("hex");
-    var user = (await getLogins()).find(({ login }) => login === fetchedLogin);
-    return user.hashedPassword === hashedPassword ? { id: user._id, userName: user.userName } : -1;
+    var user = authMethod === "byEmail" ? await findByEmail(fetchedLoginData) : await findByUserName(fetchedLoginData);
+    return user.hashedPassword === hashedPassword ? { id: user._id, userName: user.userName } : null;
 }
 
-module.exports.verifyLogin = async (fetchedLogin) => {
-    return ((await getLogins()).findIndex(({ login }) => login === fetchedLogin) !== -1) ? true : false;
+module.exports.verifyLogin = async (fetchedLoginData) => {
+    const foundByEmail = await findByEmail(fetchedLoginData);
+    
+    if (foundByEmail === null) {
+        const foundByUserName = await findByUserName(fetchedLoginData);
+
+        return foundByUserName !== null ? "byUserName" : false;
+    }
+
+    return "byEmail";
 }
