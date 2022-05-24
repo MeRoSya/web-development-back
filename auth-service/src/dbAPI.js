@@ -1,30 +1,15 @@
-const MongoClient = require("mongodb").MongoClient;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-let users;
+const user = mongoose.model("user", new Schema({
+    email: String,
+    userName: String,
+    hashedPassword: String
+}));
 
-module.exports.dbClientInit = (app, port, mongoUrl) => {
+module.exports.findByEmail = async email => await user.findOne({email: email});
 
-    const mongoClient = new MongoClient(mongoUrl);
+module.exports.findByUserName = async userName => await user.findOne({userName: userName});
 
-    mongoClient.connect((err, client) => {
-        if (err) return console.log(err);
 
-        users = client.db("usersdb").collection("users");
-
-        app.listen(port, () => {
-            console.log("Auth service started...");
-        });
-    });
-}
-
-module.exports.getLogins = async () => {
-    const loginList = await users.find({}).toArray();
-
-    return loginList;
-}
-
-module.exports.addLogin = async (user) => {
-    const addedUser = await users.insertOne(user);
-
-    return addedUser;
-}
+module.exports.createUser = async newUser => await user.create(newUser);
