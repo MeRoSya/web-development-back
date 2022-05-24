@@ -1,11 +1,11 @@
 {
-  "name": "messaging-service",
+  "name": "auth-service",
   "version": "1.0.0",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.0",
-    "mongodb": "^4.6.0",
+    "mongoose": "^6.3.4",
     "node-telegram-bot-api": "^0.56.0"
   },
   "scripts": {
