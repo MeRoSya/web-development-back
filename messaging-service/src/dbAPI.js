@@ -1,30 +1,11 @@
-const MongoClient = require("mongodb").MongoClient;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-let messages;
+const message = mongoose.model("user", new Schema({
+    userName: String,
+    text: String
+}));
 
-module.exports.dbClientInit = (app, port, mongoUrl) => {
+module.exports.getMessages = async () => await message.find({});
 
-    const mongoClient = new MongoClient(mongoUrl);
-
-    mongoClient.connect((err, client) => {
-        if (err) return console.log(err);
-
-        messages = client.db("messagesdb").collection("messages");
-
-        app.listen(port, () => {
-            console.log("Messaging service started...");
-        });
-    });
-}
-
-module.exports.getMessages = async () => {
-    const messagesList = await messages.find({}).toArray();
-
-    return messagesList;
-}
-
-module.exports.addMessage = async (message) => {
-    const addedMessage = await messages.insertOne(message);
-
-    return addedMessage;
-}
+module.exports.addMessage = async (newMessage) => await message.create(newMessage);
