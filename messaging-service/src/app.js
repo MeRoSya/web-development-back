@@ -1,10 +1,10 @@
 const express = require("express");
-const cors = require('cors');
-const TelegramBot = require('node-telegram-bot-api');
+const cors = require("cors");
+const TelegramBot = require("node-telegram-bot-api");
+const mongoose = require("mongoose");
 const { sendChatMessage, getChatMessages } = require("./messaging");
-const { dbClientInit } = require("./dbAPI");
 
-require('dotenv').config();
+require("dotenv").config();
 
 const app = express();
 
@@ -19,14 +19,21 @@ app.use(express.json());
 app.post("/api/v1/messaging/sendMessage", (request, response) => {
     sendChatMessage(request.body.userName, request.body.messageBody, bot).then(
         () => response.sendStatus(200)
+    ).catch(
+        error => response.status(500).json({ code: error })
     );
 })
 
 app.get("/api/v1/messaging/getMessages", (request, response) => {
     getChatMessages().then(
-        (messages) => response.send(messages)
+        messages => response.json(messages)
+    ).catch(
+        error => response.status(500).json({ code: error })
     );
 })
 //#endregion
 
-dbClientInit(app, 3001, process.env.MONGO_URL);
+app.listen(3001, async () => {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("Messaging service started...");
+});
