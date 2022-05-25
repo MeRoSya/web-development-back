@@ -1,11 +1,11 @@
 const express = require("express");
-const cors = require('cors');
-const TelegramBot = require('node-telegram-bot-api');
+const cors = require("cors");
+const TelegramBot = require("node-telegram-bot-api");
+const mongoose = require("mongoose");
 const { verifyLogin, auth } = require("./login");
-const { canCreateUser, register } = require("./registration");
-const { dbClientInit } = require("./dbAPI");
+const { canCreateUser, signUp } = require("./registration");
 
-require('dotenv').config();
+require("dotenv").config();
 
 const app = express();
 
@@ -22,25 +22,33 @@ app.use("/api/v1/auth/login", (request, response, next) => {
     verifyLogin(request.body.login).then(
         (result) => {
             if (!result) {
-                response.sendStatus(404);
+                console.error("User " + request.body.login + " not found");
+                response.status(404).json({
+                    login: request.body.login,
+                    reason: "User not found"
+                });
             } else {
                 console.log("Login is verified");
+                request.body.authMethod = result;
                 next();
             }
         });
 });
 
 app.post("/api/v1/auth/login", (request, response) => {
-    auth(request.body.login, request.body.password).then(
+    auth(request.body.login, request.body.password, request.body.authMethod).then(
         (userInfo) => {
-            if (userInfo === -1) {
-                response.sendStatus(401);
+            if (userInfo === null) {
+                response.status(401).json({
+                    login: userInfo.login,
+                    reason: "Could not verify password"
+                });
             } else {
                 console.log("User " + userInfo.userName + " successfully authenticated");
 
                 bot.sendMessage(process.env.LOGIN_CHAT_ID, "User " + userInfo.userName + " logged in at " + new Date(Date.now()).toUTCString());
 
-                response.send(JSON.stringify(userInfo));
+                response.json(userInfo);
             }
         });
 });
@@ -53,33 +61,40 @@ app.use("/api/v1/auth/registration", (request, response, next) => {
     canCreateUser(request.body.login).then(
         (result) => {
             if (!result) {
-                response.sendStatus(403);
+                console.error("Login is not available for registration");
+                response.status(403).json({ reason: "Login is not available for registration" });
             } else {
                 console.log("Login is available for registration");
                 next();
             }
         }
-    );
+    ).catch((error) => {
+        console.error(error);
+    });
 });
 
 app.post("/api/v1/auth/registration", (request, response) => {
     const userInfo = request.body
 
-    register(userInfo.login, userInfo.password, userInfo.userName).then((userResponse) => {
+    signUp(userInfo.login, userInfo.password, userInfo.userName).then((userResponse) => {
 
-        if (userResponse === -1) {
-            response.sendStatus(401);
-        } else {
-            console.log("User " + userResponse.userName + " successfully registered");
+        console.log("User " + userResponse.userName + " successfully registered");
 
-            bot.sendMessage(process.env.LOGIN_CHAT_ID, "User " + userResponse.userName + " logged in at " + new Date(Date.now()).toUTCString());
+        bot.sendMessage(process.env.LOGIN_CHAT_ID, "User " + userResponse.userName + " logged in at " + new Date(Date.now()).toUTCString());
 
-            response.send(JSON.stringify(userResponse));
-        }
-
+        response.json(userResponse);
+    }).catch((error) => {
+        console.error("Unable to sign user up");
+        response.status(500).json({
+            message: "Unable to sign user up",
+            error: error
+        });
     });
 });
 
 //#endregion Registration handle
 
-dbClientInit(app, 3001, process.env.MONGO_URL);
+app.listen(3001, async () => {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("Auth service started...");
+});

@@ -1,16 +1,16 @@
 const crypto = require("crypto");
-const { addLogin, getLogins } = require("./dbAPI");
+const { createUser, findByEmail, findByUserName } = require("./dbAPI");
 
-module.exports.register = async (fetchedLogin, fetchedPassword, fetchedUserName) => {
+module.exports.signUp = async (fetchedEmail, fetchedPassword, fetchedUserName) => {
     var hashedPassword = crypto.createHash("sha256").update(fetchedPassword).digest("hex");
     
     user = {
-        login: fetchedLogin,
+        email: fetchedEmail,
         userName: fetchedUserName,
         hashedPassword: hashedPassword
     };
 
-    const added_id = (await addLogin(user)).insertedId;
+    const added_id = (await createUser(user))._id;
 
     return {
         id: added_id,
@@ -18,6 +18,15 @@ module.exports.register = async (fetchedLogin, fetchedPassword, fetchedUserName)
     }
 }
 
-module.exports.canCreateUser = async (fetchedLogin) => {
-    return ((await getLogins()).findIndex(({ login }) => login === fetchedLogin) !== -1) ? false : true;
+module.exports.canCreateUser = async (fetchedLoginData) => {
+
+    const email = await findByEmail(fetchedLoginData);
+    
+    if (email === null) {
+        const userName = await findByUserName(fetchedLoginData);
+
+        return userName === null;
+    }
+
+    return false;
 }
