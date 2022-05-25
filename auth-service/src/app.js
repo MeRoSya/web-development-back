@@ -1,11 +1,11 @@
 const express = require("express");
-const cors = require('cors');
-const TelegramBot = require('node-telegram-bot-api');
+const cors = require("cors");
+const TelegramBot = require("node-telegram-bot-api");
 const mongoose = require("mongoose");
 const { verifyLogin, auth } = require("./login");
 const { canCreateUser, signUp } = require("./registration");
 
-require('dotenv').config();
+require("dotenv").config();
 
 const app = express();
 
