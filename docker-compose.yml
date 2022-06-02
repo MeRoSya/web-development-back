@@ -17,7 +17,7 @@ services:
       - message-db:mongo
     
   message-db:
-    image: mongo:4.4.6
+    image: mongo:latest
     container_name: message-database
     restart: unless-stopped
     expose:
@@ -42,7 +42,7 @@ services:
       - auth-db:mongo
     
   auth-db:
-    image: mongo:4.4.6
+    image: mongo:latest
     container_name: auth-database
     restart: unless-stopped
     expose:
